@@ -83,6 +83,17 @@ void Piece::selectPiece()
     selected = true;
 }
 
+// void Piece::highlight()
+// {
+//     pShape.setOutlineThickness(5);
+//     pShape.setOutlineColor(sf::Color::Red);
+// }
+
+// void Piece::unhighlight()
+// {
+//     pShape.setOutlineThickness(0);
+// }
+
 void Piece::deselectPiece()
 {
     pShape.setOutlineThickness(0);
@@ -117,6 +128,7 @@ void Piece::movePiece(std::string location)
 void Piece::draw(sf::RenderWindow &window)
 {
     window.draw(pShape);
+    // window.draw(highlightR);
 }
 
 std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocations, std::set<std::string> blackPieceLocations, bool attackMovesOnly){

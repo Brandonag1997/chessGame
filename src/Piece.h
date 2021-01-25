@@ -11,6 +11,10 @@ class Piece
 
         void selectPiece();
 
+        // void highlight();
+
+        // void unhighlight();
+
         void deselectPiece();
 
         bool isSelected();
@@ -32,6 +36,7 @@ class Piece
         bool hasMovedB = false;
         sf::RectangleShape pShape;
         sf::Texture pieceTexture;
+        std::set<std::string> squaresUnderAttack;
 };
 
 #endif

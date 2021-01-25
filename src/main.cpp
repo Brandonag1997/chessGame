@@ -5,6 +5,8 @@
 #include <set>
 #include "Piece.h"
 
+//get the square that the mouse is clicking on
+//updates the file and rank pointers with the square details
 void testPosition(int x, int y, char &file, char &rank)
 {
     if ((y > 42) && (y < 94)) {
@@ -63,12 +65,28 @@ void testPosition(int x, int y, char &file, char &rank)
     }
 }
 
+//updates the piece location sets
+void updateLocations(std::unordered_map<std::string, Piece> whitePieces, std::unordered_map<std::string, Piece> blackPieces, std::set<std::string> &whitePieceLocations, std::set<std::string> &blackPieceLocations)
+{
+    whitePieceLocations.clear();
+    blackPieceLocations.clear();
+    for (auto itr = whitePieces.begin(); itr != whitePieces.end(); itr++) { 
+        whitePieceLocations.insert(itr->first);
+    } 
+    for (auto itr = blackPieces.begin(); itr != blackPieces.end(); itr++) { 
+        blackPieceLocations.insert(itr->first);
+    }
+}
+
+//returns true if the king is in check
+//also computes squares attacked by enemy pieces
 bool isKingInCheck(std::unordered_map<std::string, Piece> enemyPieces, std::set<std::string> whitePieceLocations, std::set<std::string>blackPieceLocations, std::string allyKingLocation, std::set<std::string> &squaresAttackedByEnemy)
 {
     squaresAttackedByEnemy.clear();
     //find what squares are being attacked
-    for (auto itr = enemyPieces.begin(); itr != enemyPieces.end(); itr++) {
-        std::set <std::string> s = itr->second.getValidMoves(whitePieceLocations, blackPieceLocations, true);
+    for (auto itr = enemyPieces.begin(); itr != enemyPieces.end(); itr++) 
+    {
+        std::set<std::string> s = itr->second.getValidMoves(whitePieceLocations, blackPieceLocations, true);
         squaresAttackedByEnemy.insert(s.begin(), s.end());
     } 
 
@@ -81,20 +99,91 @@ bool isKingInCheck(std::unordered_map<std::string, Piece> enemyPieces, std::set<
     {
         return false;
     }
-
 }
 
-void updateLocations(std::unordered_map<std::string, Piece> whitePieces, std::unordered_map<std::string, Piece> blackPieces, std::set<std::string> &whitePieceLocations, std::set<std::string> &blackPieceLocations)
+bool isGameOver(std::unordered_map<std::string, Piece> whitePieces, std::unordered_map<std::string, Piece> blackPieces, std::string whiteKingLocation, std::string blackKingLocation, bool whiteTurn)
 {
-    whitePieceLocations.clear();
-    blackPieceLocations.clear();
-    for (auto itr = whitePieces.begin(); itr != whitePieces.end(); itr++) { 
-        whitePieceLocations.insert(itr->first);
-    } 
-    for (auto itr = blackPieces.begin(); itr != blackPieces.end(); itr++) { 
-        blackPieceLocations.insert(itr->first);
+    std::set<std::string> whitePieceLocations;
+    std::set<std::string> blackPieceLocations;
+    updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+
+    //test all posible moves
+    if(whiteTurn)
+    {    
+        for (auto itr = whitePieces.begin(); itr != whitePieces.end(); itr++) 
+        { 
+            std::string currentSquare = itr->first;
+            std::set<std::string> possibleMoves = itr->second.getValidMoves(whitePieceLocations, blackPieceLocations, false);
+            for (auto moveN : possibleMoves)
+            {
+                std::unordered_map<std::string, Piece> whitePiecesTemp = whitePieces;
+                std::unordered_map<std::string, Piece> blackPiecesTemp = blackPieces;
+                std::string whiteKingLocationTemp = whiteKingLocation;
+                std::string blackKingLocationTemp = blackKingLocation;
+                if (blackPieces.find(moveN) != blackPieces.end())
+                {
+                    blackPiecesTemp.erase(moveN);
+                }
+                whitePiecesTemp.at(currentSquare).movePiece(moveN);
+                auto wp = whitePiecesTemp.extract(currentSquare);
+                wp.key() = moveN;
+                whitePiecesTemp.insert(move(wp));
+                if(whitePiecesTemp.at(moveN).getType() == "kingW")
+                {
+                    whiteKingLocationTemp = moveN;
+                }
+                std::set<std::string> whitePieceLocationsTemp;
+                std::set<std::string> blackPieceLocationsTemp;
+                updateLocations(whitePiecesTemp, blackPiecesTemp, whitePieceLocationsTemp, blackPieceLocationsTemp);
+                std::set<std::string> squaresAttackedByBlackTemp;   
+                if(!isKingInCheck(blackPiecesTemp, whitePieceLocationsTemp, blackPieceLocationsTemp, whiteKingLocationTemp, squaresAttackedByBlackTemp))
+                {
+                    return false;
+                }
+            }
+        }
     }
+    else
+    {
+        for (auto itr = blackPieces.begin(); itr != blackPieces.end(); itr++) 
+        { 
+            std::string currentSquare = itr->first;
+            std::set<std::string> possibleMoves = itr->second.getValidMoves(whitePieceLocations, blackPieceLocations, false);
+            for (auto moveN : possibleMoves)
+            {
+                std::unordered_map<std::string, Piece> whitePiecesTemp = whitePieces;
+                std::unordered_map<std::string, Piece> blackPiecesTemp = blackPieces;
+                std::string whiteKingLocationTemp = whiteKingLocation;
+                std::string blackKingLocationTemp = blackKingLocation;
+                if (whitePieces.find(moveN) != whitePieces.end())
+                {
+                    whitePiecesTemp.erase(moveN);
+                }
+                blackPiecesTemp.at(currentSquare).movePiece(moveN);
+                auto bp = blackPiecesTemp.extract(currentSquare);
+                bp.key() = moveN;
+                blackPiecesTemp.insert(move(bp));
+                if(blackPiecesTemp.at(moveN).getType() == "kingB")
+                {
+                    blackKingLocationTemp = moveN;
+                }
+                std::set<std::string> whitePieceLocationsTemp;
+                std::set<std::string> blackPieceLocationsTemp;
+                updateLocations(whitePiecesTemp, blackPiecesTemp, whitePieceLocationsTemp, blackPieceLocationsTemp);
+                std::set<std::string> squaresAttackedByWhiteTemp;   
+                if(!isKingInCheck(whitePiecesTemp, whitePieceLocationsTemp, blackPieceLocationsTemp, blackKingLocationTemp, squaresAttackedByWhiteTemp))
+                {
+                    return false;
+                }
+            }
+        }
+    } 
+    return true; //no moves left not resulting in check, game is over    
 }
+
+
+
+
 
 int main()
 {
@@ -207,28 +296,31 @@ int main()
                     break;
                 case sf::Event::MouseButtonPressed:
                     testPosition(sf::Mouse::getPosition(window).x, sf::Mouse::getPosition(window).y, file, rank);
-                    //set storing all valid moves
+                    //set storing all valid moves for a specific piece
                     std::set<std::string> validMovesP;
                     //sets to hold locations of every piece on the board
                     std::set<std::string> whitePieceLocations;
                     std::set<std::string> blackPieceLocations;
-
+                    //squares under attack by each player
                     std::set<std::string> squaresAttackedByWhite;
                     std::set<std::string> squaresAttackedByBlack;
                     
                     
-                    updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                    // for (auto itr = whitePieces.begin(); itr != whitePieces.end(); itr++) { 
-                    //     whitePieceLocations.insert(itr->first);
-                    // } 
-                    // for (auto itr = blackPieces.begin(); itr != blackPieces.end(); itr++) { 
-                    //     blackPieceLocations.insert(itr->first);
-                    // }
+                    updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);       
+                    if(isGameOver)
+                    {
+                        if(whiteTurn)
+                        {
+                            winningPlayer = "White";
+                        }
+                        else
+                        {
+                            winningPlayer = "Black";
+                        }
+                    }          
 
-                    
-
-                    whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
-                    blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
+                    // whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
+                    // blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
 
                     if ((file == ' ') || (rank == ' ')) //can't select square off the board
                     {
@@ -267,6 +359,7 @@ int main()
                             {
                                 validMovesP = whitePieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
                                 //logic to check if castling posible
+                                whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
                                 if(whitePieces.at(selectedSquare).getType() == "kingW" && whitePieces.at(selectedSquare).hasMoved() == false && whiteKingInCheck == false)
                                 {
                                     if((whitePieces.find("h1") != whitePieces.end()) && (whitePieces.at("h1").hasMoved() == false) && (whitePieces.find("f1") == whitePieces.end()) && (whitePieces.find("g1") == whitePieces.end()) && (blackPieces.find("f1") == blackPieces.end()) && (blackPieces.find("g1") == blackPieces.end()) && (squaresAttackedByBlack.find("f1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("g1") == squaresAttackedByBlack.end()))//king side castle
@@ -382,6 +475,15 @@ int main()
                                 }
                                 selectedSquare = "";
                                 whiteTurn = !whiteTurn;
+                                blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
+                                if(blackKingInCheck)
+                                {
+                                    // blackPieces.at(blackKingLocation).highlight();
+                                }
+                                else
+                                {
+                                    // blackPieces.at(blackKingLocation).unhighlight();
+                                }
                             }                            
                         }
                         else {
@@ -389,6 +491,7 @@ int main()
                             {
                                 validMovesP = blackPieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
                                 //logic to check if castling posible
+                                blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
                                 if(blackPieces.at(selectedSquare).getType() == "kingB" && blackPieces.at(selectedSquare).hasMoved() == false && blackKingInCheck == false)
                                 {
                                     if((blackPieces.find("h8") != blackPieces.end()) && (blackPieces.at("h8").hasMoved() == false) && (whitePieces.find("f8") == whitePieces.end()) && (whitePieces.find("g8") == whitePieces.end()) && (blackPieces.find("f8") == blackPieces.end()) && (blackPieces.find("g8") == blackPieces.end()) && (squaresAttackedByWhite.find("f8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("g8") == squaresAttackedByWhite.end()))//king side castle
@@ -420,7 +523,7 @@ int main()
                                 if (validMovesP.count(key))
                                 {
 
-                                    bool captureEnemy = false;
+                                    bool captureEnemy = false; //is the move a capture move?
                                     if (whitePieces.find(key) != whitePieces.end()) 
                                     {
                                         //capture white piece
@@ -502,6 +605,15 @@ int main()
                                 }
                                 selectedSquare = "";
                                 whiteTurn = !whiteTurn;
+                                whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
+                                if(whiteKingInCheck)
+                                {
+                                    // whitePieces.at(whiteKingLocation).highlight();
+                                }
+                                else
+                                {
+                                    // whitePieces.at(whiteKingLocation).unhighlight();
+                                }
                             }                            
                         }
                     }
@@ -512,6 +624,7 @@ int main()
 
         window.clear();
         window.draw(board);
+        // window.draw(moves);
 
         for (auto itr = whitePieces.begin(); itr != whitePieces.end(); itr++) { 
             itr->second.draw(window);
