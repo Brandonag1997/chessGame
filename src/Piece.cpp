@@ -144,9 +144,10 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
             if((whitePieceLocations.count(pieceInFront) == 0 && (blackPieceLocations.count(pieceInFront) == 0)))
             {
                 moves.insert(std::string() + file + (char)(rank + 1));
-            }
-            if(hasMoved() == false){
-                moves.insert(std::string() + file + (char)(rank + 2));
+                if((hasMoved() == false) && (blackPieceLocations.count(std::string() + file + (char)(rank + 2)) == 0))
+                {
+                    moves.insert(std::string() + file + (char)(rank + 2));
+                }
             }
         }
         //check if pawn can capture left or right
@@ -165,6 +166,7 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
     {
         char rank = position.at(1);
         char file = position.at(0);
+        
         std::string upLeft = std::string() + (char)(file - 1) + (char)(rank + 1);
         std::string up = std::string() + file + (char)(rank + 1);
         std::string upRight = std::string() + (char)(file + 1) + (char)(rank + 1);
@@ -175,35 +177,59 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         std::string left = std::string() + (char)(file - 1) + rank;
         if(blackPieceLocations.count(upLeft) || !whitePieceLocations.count(upLeft))
         {
-            moves.insert(upLeft);
+            if(((rank - '0') + 1 <=8) && ((char)(file - 1) >= 'a'))
+            {
+                moves.insert(upLeft);
+            }
         }
         if(blackPieceLocations.count(up) || !whitePieceLocations.count(up))
         {
-            moves.insert(up);
+            if((rank - '0') + 1 <=8)
+            {
+                moves.insert(up);
+            }
         }
         if(blackPieceLocations.count(upRight) || !whitePieceLocations.count(upRight))
         {
-            moves.insert(upRight);
+            if(((rank - '0') + 1 <=8) && ((char)(file + 1) <= 'h'))
+            {
+                moves.insert(upRight);
+            }
         }
         if(blackPieceLocations.count(downLeft) || !whitePieceLocations.count(downLeft))
         {
-            moves.insert(downLeft);
+            if(((rank - '0') - 1 >= 1) && ((char)(file - 1) >= 'a'))
+            {
+                moves.insert(downLeft);
+            }
         }
         if(blackPieceLocations.count(down) || !whitePieceLocations.count(down))
         {
-            moves.insert(down);
+            if((rank - '0') - 1 >= 1)
+            {
+                moves.insert(down);
+            }
         }
         if(blackPieceLocations.count(downRight) || !whitePieceLocations.count(downRight))
         {
-            moves.insert(downRight);
+            if(((rank - '0') - 1 >= 1) && ((char)(file + 1) <= 'h'))
+            {
+                moves.insert(downRight);
+            }
         }
         if(blackPieceLocations.count(right) || !whitePieceLocations.count(right))
         {
-            moves.insert(right);
+            if((char)(file + 1) <= 'h')
+            {
+                moves.insert(right);
+            }
         }
         if(blackPieceLocations.count(left) || !whitePieceLocations.count(left))
         {
-            moves.insert(left);
+            if((char)(file - 1) >= 'a')
+            {
+                moves.insert(left);
+            }
         }
     }
     if(type == "bishopW" || type == "queenW")
@@ -488,12 +514,16 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         char file = position.at(0);
         //check if piece in front of pawn, if not then let pawn move forward
         std::string pieceInFront = std::string() + file + (char)(rank - 1);
-        if((blackPieceLocations.count(pieceInFront) == 0 && (whitePieceLocations.count(pieceInFront) == 0)))
+        if(!attackMovesOnly)
         {
-            moves.insert(std::string() + file + (char)(rank - 1));
-        }
-        if(hasMoved() == false){
-            moves.insert(std::string() + file + (char)(rank - 2));
+            if((blackPieceLocations.count(pieceInFront) == 0 && (whitePieceLocations.count(pieceInFront) == 0)))
+            {
+                moves.insert(std::string() + file + (char)(rank - 1));
+                if((hasMoved() == false) && (whitePieceLocations.count(std::string() + file + (char)(rank - 2)) == 0))
+                {
+                    moves.insert(std::string() + file + (char)(rank - 2));
+                }
+            }
         }
         //check if pawn can capture left or right
         std::string captureLeft = std::string() + (char)(file - 1) + (char)(rank - 1);
@@ -521,35 +551,59 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         std::string left = std::string() + (char)(file - 1) + rank;
         if(whitePieceLocations.count(upLeft) || !blackPieceLocations.count(upLeft))
         {
-            moves.insert(upLeft);
+            if(((rank - '0') + 1 <=8) && ((char)(file - 1) >= 'a'))
+            {
+                moves.insert(upLeft);
+            }
         }
         if(whitePieceLocations.count(up) || !blackPieceLocations.count(up))
         {
-            moves.insert(up);
+            if((rank - '0') + 1 <=8)
+            {
+                moves.insert(up);
+            }
         }
         if(whitePieceLocations.count(upRight) || !blackPieceLocations.count(upRight))
         {
-            moves.insert(upRight);
+            if(((rank - '0') + 1 <=8) && ((char)(file + 1) <= 'h'))
+            {
+                moves.insert(upRight);
+            }
         }
         if(whitePieceLocations.count(downLeft) || !blackPieceLocations.count(downLeft))
         {
-            moves.insert(downLeft);
+            if(((rank - '0') - 1 >= 1) && ((char)(file - 1) >= 'a'))
+            {
+                moves.insert(downLeft);
+            }
         }
         if(whitePieceLocations.count(down) || !blackPieceLocations.count(down))
         {
-            moves.insert(down);
+            if((rank - '0') - 1 >= 1)
+            {
+                moves.insert(down);
+            }
         }
         if(whitePieceLocations.count(downRight) || !blackPieceLocations.count(downRight))
         {
-            moves.insert(downRight);
+            if(((rank - '0') - 1 >= 1) && ((char)(file + 1) <= 'h'))
+            {
+                moves.insert(downRight);
+            }
         }
         if(whitePieceLocations.count(right) || !blackPieceLocations.count(right))
         {
-            moves.insert(right);
+            if((char)(file + 1) <= 'h')
+            {
+                moves.insert(right);
+            }
         }
         if(whitePieceLocations.count(left) || !blackPieceLocations.count(left))
         {
-            moves.insert(left);
+            if((char)(file - 1) >= 'a')
+            {
+                moves.insert(left);
+            }
         }
     }
     if(type == "bishopB" || type == "queenB")
