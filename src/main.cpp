@@ -286,6 +286,16 @@ int main()
     Piece e8Piece("e8","src/res/kingB.png");
     blackPieces.insert({"e8", e8Piece});
 
+    //objects for promotion
+    Piece newQueenW("nq","src/res/queenW.png");
+    Piece newQueenB("nq","src/res/queenB.png");
+    Piece newKnightW("nk","src/res/knightW.png");
+    Piece newKnightB("nk","src/res/knightB.png");
+    Piece newRookW("nr","src/res/rookW.png");
+    Piece newRookB("nr","src/res/rookB.png");
+    Piece newBishopW("nb","src/res/bishopW.png");
+    Piece newBishopB("nb","src/res/bishopB.png");
+
     while (window.isOpen())
     {
         sf::Event event;
@@ -441,6 +451,17 @@ int main()
                                         {
                                             blackPieces.erase("zz");
                                         }
+                                        //logic for promotion of pawn, just make a queen for now
+                                        if(whitePieces.at(key).getType() == "pawnW")
+                                        {
+                                            char rank = key.at(1);
+                                            if (rank == '8')
+                                            {
+                                                whitePieces.erase(key);
+                                                whitePieces.insert({key, newQueenW});
+                                                whitePieces.at(key).movePiece(key);
+                                            }
+                                        }
                                     }
 
                                     
@@ -562,6 +583,17 @@ int main()
                                         if(captureEnemy)
                                         {
                                             whitePieces.erase("zz");
+                                        }
+                                        //logic for promotion of pawn, just make a queen for now
+                                        if(blackPieces.at(key).getType() == "pawnB")
+                                        {
+                                            char rank = key.at(1);
+                                            if (rank == '1')
+                                            {
+                                                blackPieces.erase(key);
+                                                blackPieces.insert({key, newQueenB});
+                                                blackPieces.at(key).movePiece(key);
+                                            }
                                         }
                                     }
 
