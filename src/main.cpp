@@ -211,6 +211,7 @@ int main()
     sf::Texture boardTexture;
     boardTexture.loadFromFile(source_dir + "board.png");
     board.setTexture(&boardTexture);
+    window.setFramerateLimit(60); //reduces cpu usage
 
     std::unordered_map<std::string, Piece> whitePieces;
     std::unordered_map<std::string, Piece> blackPieces;
@@ -322,7 +323,8 @@ int main()
                     std::set<std::string> squaresAttackedByWhite;
                     std::set<std::string> squaresAttackedByBlack;
                     
-                    
+                    //updates piece locations and determines if the game is over
+                    //need to add in stalemate and other draws
                     updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                     if(isGameOver(whitePieces, blackPieces, whiteKingLocation, blackKingLocation, whiteTurn))
                     {
@@ -369,7 +371,7 @@ int main()
                     }
                     else //moving and capturing
                     {
-                        //if it's white's turn and an empty square is clicked on
+                        //if it's white's turn
                         if (whiteTurn)
                         {
                             //if a white piece is selected
@@ -648,7 +650,7 @@ int main()
                                             //if en pacant capture erase white piece
                                             if(rank == '3' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
                                             {
-                                                std::string wp = std::string() + file + (char)(rank - 1);
+                                                std::string wp = std::string() + file + (char)(rank + 1);
                                                 whitePieces.erase(wp);
                                             }
                                         }

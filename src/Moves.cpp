@@ -1,4 +1,5 @@
 // Moves.cpp
+// code to show possible moves of a selected piece
 #include <SFML/Graphics.hpp>
 #include <set>
 #include "Moves.h"

@@ -553,11 +553,11 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         //en pacent
         std::string enPacentLeft = std::string() + (char)(file - 1) + '2' + '4';
         std::string enPacentRight = std::string() + (char)(file + 1) + '2' + '4';
-        if(blackPieceLocations.count(enPacentLeft))
+        if(whitePieceLocations.count(enPacentLeft))
         {
             moves.insert(captureLeft);
         }
-        if(blackPieceLocations.count(enPacentRight))
+        if(whitePieceLocations.count(enPacentRight))
         {
             moves.insert(captureRight);
         }
