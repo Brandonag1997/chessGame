@@ -3,11 +3,13 @@
 #include <set>
 #include "Piece.h"
 #include <iostream>
+#include "config.h"
 
 
 Piece::Piece(std::string location, std::string fileLocation)
 {
-    std::string delim = "src/res/";
+    std::string delim = RESOURCE_PATH; 
+    // std::string delim = "content/";
     type = fileLocation.substr(delim.length(),fileLocation.find(".png")-delim.length());
     position = location;
     std::vector<char> cstr(position.c_str(), position.c_str() + position.size() + 1);
@@ -161,6 +163,18 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         {
             moves.insert(captureRight);
         }
+        //en pacent
+        std::string enPacentLeft = std::string() + (char)(file - 1) + '7' + '5';
+        std::string enPacentRight = std::string() + (char)(file + 1) + '7' + '5';
+        if(blackPieceLocations.count(enPacentLeft))
+        {
+            moves.insert(captureLeft);
+        }
+        if(blackPieceLocations.count(enPacentRight))
+        {
+            moves.insert(captureRight);
+        }
+
     }
     if(type == "kingW") //need to add logic so king can't move into check
     {
@@ -533,6 +547,17 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
             moves.insert(captureLeft);
         }
         if(whitePieceLocations.count(captureRight))
+        {
+            moves.insert(captureRight);
+        }
+        //en pacent
+        std::string enPacentLeft = std::string() + (char)(file - 1) + '2' + '4';
+        std::string enPacentRight = std::string() + (char)(file + 1) + '2' + '4';
+        if(blackPieceLocations.count(enPacentLeft))
+        {
+            moves.insert(captureLeft);
+        }
+        if(blackPieceLocations.count(enPacentRight))
         {
             moves.insert(captureRight);
         }

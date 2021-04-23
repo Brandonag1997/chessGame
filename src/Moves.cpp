@@ -7,7 +7,7 @@
 Moves::Moves(std::set<std::string> validMoves)
 {
     int xLocation, yLocation;
-    redTexture.loadFromFile("src/res/red.png");
+    redTexture.loadFromFile("content/red.png");
     for(auto elem: validMoves)
     {
         std::vector<char> cstr(elem.c_str(), elem.c_str() + elem.size() + 1);

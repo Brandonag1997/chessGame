@@ -4,6 +4,8 @@
 #include <string>
 #include <set>
 #include "Piece.h"
+#include "config.h"
+
 
 //get the square that the mouse is clicking on
 //updates the file and rank pointers with the square details
@@ -127,7 +129,7 @@ bool isGameOver(std::unordered_map<std::string, Piece> &whitePieces, std::unorde
                 whitePiecesTemp.at(currentSquare).movePiece(moveN);
                 auto wp = whitePiecesTemp.extract(currentSquare);
                 wp.key() = moveN;
-                whitePiecesTemp.insert(move(wp));
+                whitePiecesTemp.insert(std::move(wp));
                 if(whitePiecesTemp.at(moveN).getType() == "kingW")
                 {
                     whiteKingLocationTemp = moveN;
@@ -163,7 +165,7 @@ bool isGameOver(std::unordered_map<std::string, Piece> &whitePieces, std::unorde
                 blackPiecesTemp.at(currentSquare).movePiece(moveN);
                 auto bp = blackPiecesTemp.extract(currentSquare);
                 bp.key() = moveN;
-                blackPiecesTemp.insert(move(bp));
+                blackPiecesTemp.insert(std::move(bp));
                 if(blackPiecesTemp.at(moveN).getType() == "kingB")
                 {
                     blackKingLocationTemp = moveN;
@@ -189,6 +191,9 @@ bool isGameOver(std::unordered_map<std::string, Piece> &whitePieces, std::unorde
 
 int main()
 {
+
+    std::string source_dir = RESOURCE_PATH; 
+    char pawnDouble; //var to hold file of pawn that moved 2 spaces on it's first turn
     char rank, file;
     std::string selectedSquare;
     bool whiteTurn = true;
@@ -204,97 +209,97 @@ int main()
     sf::RenderWindow window(sf::VideoMode(500, 500), "Chess Game!");
     sf::RectangleShape board(sf::Vector2f(500, 500));
     sf::Texture boardTexture;
-    boardTexture.loadFromFile("src/res/board.png");
+    boardTexture.loadFromFile(source_dir + "board.png");
     board.setTexture(&boardTexture);
 
     std::unordered_map<std::string, Piece> whitePieces;
     std::unordered_map<std::string, Piece> blackPieces;
 
     //pawns
-    Piece a2Piece("a2","src/res/pawnW.png");
+    Piece a2Piece("a2",source_dir + "pawnW.png");
     whitePieces.insert({"a2", a2Piece});
-    Piece b2Piece("b2","src/res/pawnW.png");
+    Piece b2Piece("b2",source_dir + "pawnW.png");
     whitePieces.insert({"b2", b2Piece});
-    Piece c2Piece("c2","src/res/pawnW.png");
+    Piece c2Piece("c2",source_dir + "pawnW.png");
     whitePieces.insert({"c2", c2Piece});
-    Piece d2Piece("d2","src/res/pawnW.png");
+    Piece d2Piece("d2",source_dir + "pawnW.png");
     whitePieces.insert({"d2", d2Piece});
-    Piece e2Piece("e2","src/res/pawnW.png");
+    Piece e2Piece("e2",source_dir + "pawnW.png");
     whitePieces.insert({"e2", e2Piece});
-    Piece f2Piece("f2","src/res/pawnW.png");
+    Piece f2Piece("f2",source_dir + "pawnW.png");
     whitePieces.insert({"f2", f2Piece});
-    Piece g2Piece("g2","src/res/pawnW.png");
+    Piece g2Piece("g2",source_dir + "pawnW.png");
     whitePieces.insert({"g2", g2Piece});
-    Piece h2Piece("h2","src/res/pawnW.png");
+    Piece h2Piece("h2",source_dir + "pawnW.png");
     whitePieces.insert({"h2", h2Piece});
-    Piece a7Piece("a7","src/res/pawnB.png");
+    Piece a7Piece("a7",source_dir + "pawnB.png");
     blackPieces.insert({"a7", a7Piece});
-    Piece b7Piece("b7","src/res/pawnB.png");
+    Piece b7Piece("b7",source_dir + "pawnB.png");
     blackPieces.insert({"b7", b7Piece});
-    Piece c7Piece("c7","src/res/pawnB.png");
+    Piece c7Piece("c7",source_dir + "pawnB.png");
     blackPieces.insert({"c7", c7Piece});
-    Piece d7Piece("d7","src/res/pawnB.png");
+    Piece d7Piece("d7",source_dir + "pawnB.png");
     blackPieces.insert({"d7", d7Piece});
-    Piece e7Piece("e7","src/res/pawnB.png");
+    Piece e7Piece("e7",source_dir + "pawnB.png");
     blackPieces.insert({"e7", e7Piece});
-    Piece f7Piece("f7","src/res/pawnB.png");
+    Piece f7Piece("f7",source_dir + "pawnB.png");
     blackPieces.insert({"f7", f7Piece});
-    Piece g7Piece("g7","src/res/pawnB.png");
+    Piece g7Piece("g7",source_dir + "pawnB.png");
     blackPieces.insert({"g7", g7Piece});
-    Piece h7Piece("h7","src/res/pawnB.png");
+    Piece h7Piece("h7",source_dir + "pawnB.png");
     blackPieces.insert({"h7", h7Piece});
 
     //rooks
-    Piece a1Piece("a1","src/res/rookW.png");
+    Piece a1Piece("a1",source_dir + "rookW.png");
     whitePieces.insert({"a1", a1Piece});
-    Piece h1Piece("h1","src/res/rookW.png");
+    Piece h1Piece("h1",source_dir + "rookW.png");
     whitePieces.insert({"h1", h1Piece});
-    Piece a8Piece("a8","src/res/rookB.png");
+    Piece a8Piece("a8",source_dir + "rookB.png");
     blackPieces.insert({"a8", a8Piece});
-    Piece h8Piece("h8","src/res/rookB.png");
+    Piece h8Piece("h8",source_dir + "rookB.png");
     blackPieces.insert({"h8", h8Piece});
 
     //knights
-    Piece b1Piece("b1","src/res/knightW.png");
+    Piece b1Piece("b1",source_dir + "knightW.png");
     whitePieces.insert({"b1", b1Piece});
-    Piece g1Piece("g1","src/res/knightW.png");
+    Piece g1Piece("g1",source_dir + "knightW.png");
     whitePieces.insert({"g1", g1Piece});
-    Piece b8Piece("b8","src/res/knightB.png");
+    Piece b8Piece("b8",source_dir + "knightB.png");
     blackPieces.insert({"b8", b8Piece});
-    Piece g8Piece("g8","src/res/knightB.png");
+    Piece g8Piece("g8",source_dir + "knightB.png");
     blackPieces.insert({"g8", g8Piece});
 
     //bishops
-    Piece c1Piece("c1","src/res/bishopW.png");
+    Piece c1Piece("c1",source_dir + "bishopW.png");
     whitePieces.insert({"c1", c1Piece});
-    Piece f1Piece("f1","src/res/bishopW.png");
+    Piece f1Piece("f1",source_dir + "bishopW.png");
     whitePieces.insert({"f1", f1Piece});
-    Piece c8Piece("c8","src/res/bishopB.png");
+    Piece c8Piece("c8",source_dir + "bishopB.png");
     blackPieces.insert({"c8", c8Piece});
-    Piece f8Piece("f8","src/res/bishopB.png");
+    Piece f8Piece("f8",source_dir + "bishopB.png");
     blackPieces.insert({"f8", f8Piece});
 
     //queens
-    Piece d1Piece("d1","src/res/queenW.png");
+    Piece d1Piece("d1",source_dir + "queenW.png");
     whitePieces.insert({"d1", d1Piece});
-    Piece d8Piece("d8","src/res/queenB.png");
+    Piece d8Piece("d8",source_dir + "queenB.png");
     blackPieces.insert({"d8", d8Piece});
 
     //kings
-    Piece e1Piece("e1","src/res/kingW.png");
+    Piece e1Piece("e1",source_dir + "kingW.png");
     whitePieces.insert({"e1", e1Piece});
-    Piece e8Piece("e8","src/res/kingB.png");
+    Piece e8Piece("e8",source_dir + "kingB.png");
     blackPieces.insert({"e8", e8Piece});
 
     //objects for promotion
-    Piece newQueenW("nq","src/res/queenW.png");
-    Piece newQueenB("nq","src/res/queenB.png");
-    Piece newKnightW("nk","src/res/knightW.png");
-    Piece newKnightB("nk","src/res/knightB.png");
-    Piece newRookW("nr","src/res/rookW.png");
-    Piece newRookB("nr","src/res/rookB.png");
-    Piece newBishopW("nb","src/res/bishopW.png");
-    Piece newBishopB("nb","src/res/bishopB.png");
+    Piece newQueenW("nq",source_dir + "queenW.png");
+    Piece newQueenB("nq",source_dir + "queenB.png");
+    Piece newKnightW("nk",source_dir + "knightW.png");
+    Piece newKnightB("nk",source_dir + "knightB.png");
+    Piece newRookW("nr",source_dir + "rookW.png");
+    Piece newRookB("nr",source_dir + "rookB.png");
+    Piece newBishopW("nb",source_dir + "bishopW.png");
+    Piece newBishopB("nb",source_dir + "bishopB.png");
 
     while (window.isOpen())
     {
@@ -370,6 +375,11 @@ int main()
                             //if a white piece is selected
                             if (selectedSquare != "")
                             {
+                                if(pawnDouble != ' ')
+                                {
+                                    std::string doublP = std::string() + pawnDouble + '7' + '5';
+                                    blackPieceLocations.insert(doublP);
+                                }
                                 validMovesP = whitePieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
                                 //logic to check if castling posible
                                 whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
@@ -412,7 +422,7 @@ int main()
                                         blackPieces.at(key).movePiece("zz");
                                         auto bh = blackPieces.extract(key);
                                         bh.key() = "zz";
-                                        blackPieces.insert(move(bh));
+                                        blackPieces.insert(std::move(bh));
                                         // blackPieces.erase(key); //do this if doesn't result in king being in check
                                     }
                                     //move piece then deselect
@@ -421,7 +431,7 @@ int main()
                                     //update key of piece moved
                                     auto nh = whitePieces.extract(selectedSquare);
                                     nh.key() = key;
-                                    whitePieces.insert(move(nh));
+                                    whitePieces.insert(std::move(nh));
                                     if(whitePieces.at(key).getType() == "kingW")
                                     {
                                         whiteKingLocation = key;
@@ -436,13 +446,14 @@ int main()
                                             blackPieces.at("zz").movePiece(key);
                                             auto bh = blackPieces.extract("zz");
                                             bh.key() = key;
-                                            blackPieces.insert(move(bh));
+                                            blackPieces.insert(std::move(bh));
                                         }
                                         whitePieces.at(key).movePiece(selectedSquare);
                                         auto wh = whitePieces.extract(key);
                                         wh.key() = selectedSquare;
-                                        whitePieces.insert(move(wh));
+                                        whitePieces.insert(std::move(wh));
                                         selectedSquare = "";
+                                        // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                                         break;
                                     }
                                     else
@@ -454,15 +465,37 @@ int main()
                                         //logic for promotion of pawn, just make a queen for now
                                         if(whitePieces.at(key).getType() == "pawnW")
                                         {
+                                            char file = key.at(0);
                                             char rank = key.at(1);
+                                            char startFile = selectedSquare.at(0);
+                                            char startRank = selectedSquare.at(1);
                                             if (rank == '8')
                                             {
                                                 whitePieces.erase(key);
                                                 whitePieces.insert({key, newQueenW});
                                                 whitePieces.at(key).movePiece(key);
                                             }
+                                            if(startRank == '2' && rank == '4')
+                                            {
+                                                pawnDouble = file;
+                                            }
+                                            else
+                                            {
+                                                pawnDouble = ' ';
+                                            }
+                                            //if en pacant capture erase black piece
+                                            if(rank == '6' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
+                                            {
+                                                std::string bp = std::string() + file + (char)(rank - 1);
+                                                blackPieces.erase(bp);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            pawnDouble = ' ';
                                         }
                                     }
+                                    // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
 
                                     
                                 }
@@ -476,10 +509,10 @@ int main()
                                     //update key of piece moved
                                     auto nh1 = whitePieces.extract(selectedSquare);
                                     nh1.key() = key;
-                                    whitePieces.insert(move(nh1));
+                                    whitePieces.insert(std::move(nh1));
                                     auto nh2 = whitePieces.extract("h1");
                                     nh2.key() = "f1";
-                                    whitePieces.insert(move(nh2));
+                                    whitePieces.insert(std::move(nh2));
                                 }
                                 else if((canCastleQ == true) && (key == "c1")) //if player can castle queen side and chooses to
                                 {
@@ -491,11 +524,12 @@ int main()
                                     //update key of piece moved
                                     auto nh1 = whitePieces.extract(selectedSquare);
                                     nh1.key() = key;
-                                    whitePieces.insert(move(nh1));
+                                    whitePieces.insert(std::move(nh1));
                                     auto nh2 = whitePieces.extract("a1");
                                     nh2.key() = "d1";
-                                    whitePieces.insert(move(nh2));
+                                    whitePieces.insert(std::move(nh2));
                                 }
+                                // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                                 selectedSquare = "";
                                 whiteTurn = !whiteTurn;
                                 blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
@@ -504,6 +538,11 @@ int main()
                         else {
                             if (selectedSquare != "")
                             {
+                                if(pawnDouble != ' ')
+                                {
+                                    std::string doublP = std::string() + pawnDouble + '2' + '4';
+                                    whitePieceLocations.insert(doublP);
+                                }
                                 validMovesP = blackPieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
                                 //logic to check if castling posible
                                 blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
@@ -546,7 +585,7 @@ int main()
                                         whitePieces.at(key).movePiece("zz");
                                         auto wh = whitePieces.extract(key);
                                         wh.key() = "zz";
-                                        whitePieces.insert(move(wh));
+                                        whitePieces.insert(std::move(wh));
                                     }
                                     //move piece then deselect
                                     blackPieces.at(selectedSquare).movePiece(key);
@@ -554,7 +593,7 @@ int main()
                                     //update key of piece moved
                                     auto nh = blackPieces.extract(selectedSquare);
                                     nh.key() = key;
-                                    blackPieces.insert(move(nh));
+                                    blackPieces.insert(std::move(nh));
                                     if(blackPieces.at(key).getType() == "kingB")
                                     {
                                         blackKingLocation = key;
@@ -569,13 +608,14 @@ int main()
                                             whitePieces.at("zz").movePiece(key);
                                             auto wh = whitePieces.extract("zz");
                                             wh.key() = key;
-                                            whitePieces.insert(move(wh));
+                                            whitePieces.insert(std::move(wh));
                                         }
                                         blackPieces.at(key).movePiece(selectedSquare);
                                         auto bh = blackPieces.extract(key);
                                         bh.key() = selectedSquare;
-                                        blackPieces.insert(move(bh));
+                                        blackPieces.insert(std::move(bh));
                                         selectedSquare = "";
+                                        // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                                         break;
                                     }
                                     else
@@ -587,13 +627,34 @@ int main()
                                         //logic for promotion of pawn, just make a queen for now
                                         if(blackPieces.at(key).getType() == "pawnB")
                                         {
+                                            char file = key.at(0);
                                             char rank = key.at(1);
+                                            char startFile = selectedSquare.at(0);
+                                            char startRank = selectedSquare.at(1);
                                             if (rank == '1')
                                             {
                                                 blackPieces.erase(key);
                                                 blackPieces.insert({key, newQueenB});
                                                 blackPieces.at(key).movePiece(key);
                                             }
+                                            if(startRank == '7' && rank == '5')
+                                            {
+                                                pawnDouble = file;
+                                            }
+                                            else
+                                            {
+                                                pawnDouble = ' ';
+                                            }
+                                            //if en pacant capture erase white piece
+                                            if(rank == '3' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
+                                            {
+                                                std::string wp = std::string() + file + (char)(rank - 1);
+                                                whitePieces.erase(wp);
+                                            }
+                                        }
+                                        else
+                                        {
+                                            pawnDouble = ' ';
                                         }
                                     }
 
@@ -608,10 +669,10 @@ int main()
                                     //update key of piece moved
                                     auto nh1 = blackPieces.extract(selectedSquare);
                                     nh1.key() = key;
-                                    blackPieces.insert(move(nh1));
+                                    blackPieces.insert(std::move(nh1));
                                     auto nh2 = blackPieces.extract("h8");
                                     nh2.key() = "f8";
-                                    blackPieces.insert(move(nh2));
+                                    blackPieces.insert(std::move(nh2));
                                 }
                                 else if((canCastleQ == true) && (key == "c8")) //if player can castle queen side and chooses to
                                 {
@@ -623,11 +684,12 @@ int main()
                                     //update key of piece moved
                                     auto nh1 = blackPieces.extract(selectedSquare);
                                     nh1.key() = key;
-                                    blackPieces.insert(move(nh1));
+                                    blackPieces.insert(std::move(nh1));
                                     auto nh2 = blackPieces.extract("a8");
                                     nh2.key() = "d8";
-                                    blackPieces.insert(move(nh2));
+                                    blackPieces.insert(std::move(nh2));
                                 }
+                                // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                                 selectedSquare = "";
                                 whiteTurn = !whiteTurn;
                                 whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
