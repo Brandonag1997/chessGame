@@ -185,7 +185,11 @@ bool isGameOver(std::unordered_map<std::string, Piece> &whitePieces, std::unorde
     return true; //no moves left not resulting in check, game is over    
 }
 
-
+void changeTurn(std::string &selectedSquare, bool &whiteTurn)
+{
+    selectedSquare = "";
+    whiteTurn = !whiteTurn;
+}
 
 
 
@@ -413,6 +417,8 @@ int main()
                                     break;
                                 }
 
+                                
+
                                 //if moving the selected piece to the new square (key) is valid
                                 if (validMovesP.count(key))
                                 {
@@ -496,10 +502,10 @@ int main()
                                         {
                                             pawnDouble = ' ';
                                         }
+                                        
                                     }
                                     // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-
-                                    
+                                    changeTurn(selectedSquare, whiteTurn);
                                 }
                                 else if((canCastleK == true) && (key == "g1")) //if player can castle king side and chooses to
                                 {
@@ -515,6 +521,7 @@ int main()
                                     auto nh2 = whitePieces.extract("h1");
                                     nh2.key() = "f1";
                                     whitePieces.insert(std::move(nh2));
+                                    changeTurn(selectedSquare, whiteTurn);
                                 }
                                 else if((canCastleQ == true) && (key == "c1")) //if player can castle queen side and chooses to
                                 {
@@ -530,10 +537,11 @@ int main()
                                     auto nh2 = whitePieces.extract("a1");
                                     nh2.key() = "d1";
                                     whitePieces.insert(std::move(nh2));
+                                    changeTurn(selectedSquare, whiteTurn);
                                 }
                                 // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                                selectedSquare = "";
-                                whiteTurn = !whiteTurn;
+                                // selectedSquare = "";
+                                // whiteTurn = !whiteTurn;
                                 blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
                             }                            
                         }
