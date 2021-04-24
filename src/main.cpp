@@ -198,6 +198,8 @@ int main()
 
     std::string source_dir = RESOURCE_PATH; 
     char pawnDouble; //var to hold file of pawn that moved 2 spaces on it's first turn
+    std::string promoting = ""; //var to show if pawn is promoting
+    std::string promotionType = "";
     char rank, file;
     std::string selectedSquare;
     bool whiteTurn = true;
@@ -297,14 +299,14 @@ int main()
     blackPieces.insert({"e8", e8Piece});
 
     //objects for promotion
-    Piece newQueenW("nq",source_dir + "queenW.png");
-    Piece newQueenB("nq",source_dir + "queenB.png");
-    Piece newKnightW("nk",source_dir + "knightW.png");
-    Piece newKnightB("nk",source_dir + "knightB.png");
-    Piece newRookW("nr",source_dir + "rookW.png");
-    Piece newRookB("nr",source_dir + "rookB.png");
-    Piece newBishopW("nb",source_dir + "bishopW.png");
-    Piece newBishopB("nb",source_dir + "bishopB.png");
+    Piece newQueenW("a9",source_dir + "queenW.png");
+    Piece newQueenB("a0",source_dir + "queenB.png");
+    Piece newKnightW("c9",source_dir + "knightW.png");
+    Piece newKnightB("c0",source_dir + "knightB.png");
+    Piece newRookW("b9",source_dir + "rookW.png");
+    Piece newRookB("b0",source_dir + "rookB.png");
+    Piece newBishopW("d9",source_dir + "bishopW.png");
+    Piece newBishopB("d0",source_dir + "bishopB.png");
 
     while (window.isOpen())
     {
@@ -344,12 +346,36 @@ int main()
                     }          
 
                     // whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
-                    // blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
-
+                    // blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);        
                     if ((file == ' ') || (rank == ' ')) //can't select square off the board
                     {
-                        break;
-                    }
+                        // std::cout << file << std::endl;
+                        // std::cout << rank << std::endl;   
+                        if (promoting == "")
+                        {
+                            break;
+                        }
+                        if (file == 'a')
+                        {
+                            promotionType = "queen";
+                        }
+                        else if (file == 'b')
+                        {
+                            promotionType = "rook";
+                        }
+                        else if (file == 'c')
+                        {
+                            promotionType = "knight";
+                        }
+                        else if (file == 'd')
+                        {
+                            promotionType = "bishop";
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }                  
                     std::string key = {file,rank};
                     //if it's white's turn and a white piece is clicked on select it
                     if ((whiteTurn) && (whitePieces.find(key) != whitePieces.end())) //picking white up piece
@@ -378,332 +404,389 @@ int main()
                         //if it's white's turn
                         if (whiteTurn)
                         {
-                            //if a white piece is selected
-                            if (selectedSquare != "")
+                            if(promoting != "" && promotionType != "")
                             {
-                                if(pawnDouble != ' ')
+                                whitePieces.erase(promoting);
+                                if (promotionType == "queen")
                                 {
-                                    std::string doublP = std::string() + pawnDouble + '7' + '5';
-                                    blackPieceLocations.insert(doublP);
+                                    whitePieces.insert({promoting, newQueenW});
                                 }
-                                validMovesP = whitePieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
-                                //logic to check if castling posible
-                                whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
-                                if(whitePieces.at(selectedSquare).getType() == "kingW" && whitePieces.at(selectedSquare).hasMoved() == false && whiteKingInCheck == false)
+                                else if (promotionType == "rook")
                                 {
-                                    if((whitePieces.find("h1") != whitePieces.end()) && (whitePieces.at("h1").hasMoved() == false) && (whitePieces.find("f1") == whitePieces.end()) && (whitePieces.find("g1") == whitePieces.end()) && (blackPieces.find("f1") == blackPieces.end()) && (blackPieces.find("g1") == blackPieces.end()) && (squaresAttackedByBlack.find("f1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("g1") == squaresAttackedByBlack.end()))//king side castle
-                                    {
-                                        canCastleK = true;
-                                    }
-                                    else
-                                    {
-                                        canCastleK = false;
-                                    }
-                                    if((whitePieces.find("a1") != whitePieces.end()) && (whitePieces.at("a1").hasMoved() == false) && (whitePieces.find("b1") == whitePieces.end()) && (whitePieces.find("c1") == whitePieces.end()) && (whitePieces.find("d1") == whitePieces.end()) && (blackPieces.find("b1") == blackPieces.end()) && (blackPieces.find("c1") == blackPieces.end()) && (blackPieces.find("d1") == blackPieces.end()) && (squaresAttackedByBlack.find("b1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("c1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("d1") == squaresAttackedByBlack.end())) //queen side castle
-                                    {
-                                        canCastleQ = true;
-                                    }
-                                    else
-                                    {
-                                        canCastleQ = false;
-                                    }
+                                    whitePieces.insert({promoting, newRookW});
                                 }
-
-                                if(whitePieces.at(selectedSquare).getType() == "kingW" && (squaresAttackedByBlack.find(key) != squaresAttackedByBlack.end()))
+                                else if (promotionType == "knight")
                                 {
-                                    std::cout << "White king cannot move into check!" << std::endl;
-                                    whitePieces.at(selectedSquare).deselectPiece();
-                                    selectedSquare = "";
-                                    break;
+                                    whitePieces.insert({promoting, newKnightW});
                                 }
-
-                                
-
-                                //if moving the selected piece to the new square (key) is valid
-                                if (validMovesP.count(key))
+                                else if (promotionType == "bishop")
                                 {
-                                    bool captureEnemy = false;
-                                    if (blackPieces.find(key) != blackPieces.end()) 
+                                    whitePieces.insert({promoting, newBishopW});
+                                }
+                                whitePieces.at(promoting).movePiece(promoting);
+                                promoting = "";
+                                promotionType = "";
+                                changeTurn(selectedSquare, whiteTurn);
+                            }
+                            else {
+                                //if a white piece is selected
+                                if (selectedSquare != "")
+                                {
+                                    if(pawnDouble != ' ')
                                     {
-                                        //capture black piece
-                                        captureEnemy = true;
-                                        blackPieces.at(key).movePiece("zz");
-                                        auto bh = blackPieces.extract(key);
-                                        bh.key() = "zz";
-                                        blackPieces.insert(std::move(bh));
-                                        // blackPieces.erase(key); //do this if doesn't result in king being in check
+                                        std::string doublP = std::string() + pawnDouble + '7' + '5';
+                                        blackPieceLocations.insert(doublP);
                                     }
-                                    //move piece then deselect
-                                    whitePieces.at(selectedSquare).movePiece(key);
-                                    whitePieces.at(selectedSquare).deselectPiece();
-                                    //update key of piece moved
-                                    auto nh = whitePieces.extract(selectedSquare);
-                                    nh.key() = key;
-                                    whitePieces.insert(std::move(nh));
-                                    if(whitePieces.at(key).getType() == "kingW")
+                                    validMovesP = whitePieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
+                                    //logic to check if castling posible
+                                    whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
+                                    if(whitePieces.at(selectedSquare).getType() == "kingW" && whitePieces.at(selectedSquare).hasMoved() == false && whiteKingInCheck == false)
                                     {
-                                        whiteKingLocation = key;
-                                    }
-                                    updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                                    if(isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack))
-                                    {
-                                        //move pieces back
-                                        std::cout << "Your king can not be in check!" << std::endl;
-                                        if(captureEnemy)
+                                        if((whitePieces.find("h1") != whitePieces.end()) && (whitePieces.at("h1").hasMoved() == false) && (whitePieces.find("f1") == whitePieces.end()) && (whitePieces.find("g1") == whitePieces.end()) && (blackPieces.find("f1") == blackPieces.end()) && (blackPieces.find("g1") == blackPieces.end()) && (squaresAttackedByBlack.find("f1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("g1") == squaresAttackedByBlack.end()))//king side castle
                                         {
-                                            blackPieces.at("zz").movePiece(key);
-                                            auto bh = blackPieces.extract("zz");
-                                            bh.key() = key;
-                                            blackPieces.insert(std::move(bh));
+                                            canCastleK = true;
                                         }
-                                        whitePieces.at(key).movePiece(selectedSquare);
-                                        auto wh = whitePieces.extract(key);
-                                        wh.key() = selectedSquare;
-                                        whitePieces.insert(std::move(wh));
+                                        else
+                                        {
+                                            canCastleK = false;
+                                        }
+                                        if((whitePieces.find("a1") != whitePieces.end()) && (whitePieces.at("a1").hasMoved() == false) && (whitePieces.find("b1") == whitePieces.end()) && (whitePieces.find("c1") == whitePieces.end()) && (whitePieces.find("d1") == whitePieces.end()) && (blackPieces.find("b1") == blackPieces.end()) && (blackPieces.find("c1") == blackPieces.end()) && (blackPieces.find("d1") == blackPieces.end()) && (squaresAttackedByBlack.find("b1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("c1") == squaresAttackedByBlack.end()) && (squaresAttackedByBlack.find("d1") == squaresAttackedByBlack.end())) //queen side castle
+                                        {
+                                            canCastleQ = true;
+                                        }
+                                        else
+                                        {
+                                            canCastleQ = false;
+                                        }
+                                    }
+
+                                    if(whitePieces.at(selectedSquare).getType() == "kingW" && (squaresAttackedByBlack.find(key) != squaresAttackedByBlack.end()))
+                                    {
+                                        std::cout << "White king cannot move into check!" << std::endl;
+                                        whitePieces.at(selectedSquare).deselectPiece();
                                         selectedSquare = "";
-                                        // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                                         break;
                                     }
-                                    else
+
+                                    
+
+                                    //if moving the selected piece to the new square (key) is valid
+                                    if (validMovesP.count(key))
                                     {
-                                        if(captureEnemy)
+                                        bool captureEnemy = false;
+                                        if (blackPieces.find(key) != blackPieces.end()) 
                                         {
-                                            blackPieces.erase("zz");
+                                            //capture black piece
+                                            captureEnemy = true;
+                                            blackPieces.at(key).movePiece("zz");
+                                            auto bh = blackPieces.extract(key);
+                                            bh.key() = "zz";
+                                            blackPieces.insert(std::move(bh));
+                                            // blackPieces.erase(key); //do this if doesn't result in king being in check
                                         }
-                                        //logic for promotion of pawn, just make a queen for now
-                                        if(whitePieces.at(key).getType() == "pawnW")
+                                        //move piece then deselect
+                                        whitePieces.at(selectedSquare).movePiece(key);
+                                        whitePieces.at(selectedSquare).deselectPiece();
+                                        //update key of piece moved
+                                        auto nh = whitePieces.extract(selectedSquare);
+                                        nh.key() = key;
+                                        whitePieces.insert(std::move(nh));
+                                        if(whitePieces.at(key).getType() == "kingW")
                                         {
-                                            char file = key.at(0);
-                                            char rank = key.at(1);
-                                            char startFile = selectedSquare.at(0);
-                                            char startRank = selectedSquare.at(1);
-                                            if (rank == '8')
+                                            whiteKingLocation = key;
+                                        }
+                                        updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+                                        if(isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack))
+                                        {
+                                            //move pieces back
+                                            std::cout << "Your king can not be in check!" << std::endl;
+                                            if(captureEnemy)
                                             {
-                                                whitePieces.erase(key);
-                                                whitePieces.insert({key, newQueenW});
-                                                whitePieces.at(key).movePiece(key);
+                                                blackPieces.at("zz").movePiece(key);
+                                                auto bh = blackPieces.extract("zz");
+                                                bh.key() = key;
+                                                blackPieces.insert(std::move(bh));
                                             }
-                                            if(startRank == '2' && rank == '4')
+                                            whitePieces.at(key).movePiece(selectedSquare);
+                                            auto wh = whitePieces.extract(key);
+                                            wh.key() = selectedSquare;
+                                            whitePieces.insert(std::move(wh));
+                                            selectedSquare = "";
+                                            // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if(captureEnemy)
                                             {
-                                                pawnDouble = file;
+                                                blackPieces.erase("zz");
+                                            }
+                                            //logic for promotion of pawn
+                                            if(whitePieces.at(key).getType() == "pawnW")
+                                            {
+                                                char file = key.at(0);
+                                                char rank = key.at(1);
+                                                char startFile = selectedSquare.at(0);
+                                                char startRank = selectedSquare.at(1);
+                                                if (rank == '8')
+                                                {
+                                                    promoting = key;
+                                                    // whitePieces.erase(key);
+                                                    // whitePieces.insert({key, newQueenW});
+                                                    // whitePieces.at(key).movePiece(key);
+                                                }
+                                                if(startRank == '2' && rank == '4')
+                                                {
+                                                    pawnDouble = file;
+                                                }
+                                                else
+                                                {
+                                                    pawnDouble = ' ';
+                                                }
+                                                //if en pacant capture erase black piece
+                                                if(rank == '6' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
+                                                {
+                                                    std::string bp = std::string() + file + (char)(rank - 1);
+                                                    blackPieces.erase(bp);
+                                                }
                                             }
                                             else
                                             {
                                                 pawnDouble = ' ';
                                             }
-                                            //if en pacant capture erase black piece
-                                            if(rank == '6' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
-                                            {
-                                                std::string bp = std::string() + file + (char)(rank - 1);
-                                                blackPieces.erase(bp);
-                                            }
+                                            
                                         }
-                                        else
-                                        {
-                                            pawnDouble = ' ';
-                                        }
-                                        
+                                        // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+                                        if(promoting == "")
+                                        {changeTurn(selectedSquare, whiteTurn);}
+                                    }
+                                    else if((canCastleK == true) && (key == "g1")) //if player can castle king side and chooses to
+                                    {
+                                        //move piece then deselect
+                                        whitePieces.at(selectedSquare).movePiece(key);
+                                        whitePieces.at("h1").movePiece("f1");
+                                        whitePieces.at(selectedSquare).deselectPiece();
+                                        whiteKingLocation = key;
+                                        //update key of piece moved
+                                        auto nh1 = whitePieces.extract(selectedSquare);
+                                        nh1.key() = key;
+                                        whitePieces.insert(std::move(nh1));
+                                        auto nh2 = whitePieces.extract("h1");
+                                        nh2.key() = "f1";
+                                        whitePieces.insert(std::move(nh2));
+                                        if(promoting == "")
+                                        {changeTurn(selectedSquare, whiteTurn);}
+                                    }
+                                    else if((canCastleQ == true) && (key == "c1")) //if player can castle queen side and chooses to
+                                    {
+                                        //move piece then deselect
+                                        whitePieces.at(selectedSquare).movePiece(key);
+                                        whitePieces.at("a1").movePiece("d1");
+                                        whitePieces.at(selectedSquare).deselectPiece();
+                                        whiteKingLocation = key;
+                                        //update key of piece moved
+                                        auto nh1 = whitePieces.extract(selectedSquare);
+                                        nh1.key() = key;
+                                        whitePieces.insert(std::move(nh1));
+                                        auto nh2 = whitePieces.extract("a1");
+                                        nh2.key() = "d1";
+                                        whitePieces.insert(std::move(nh2));
+                                        if(promoting == "")
+                                        {changeTurn(selectedSquare, whiteTurn);}
                                     }
                                     // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                                    changeTurn(selectedSquare, whiteTurn);
+                                    // selectedSquare = "";
+                                    // whiteTurn = !whiteTurn;
+                                    blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
                                 }
-                                else if((canCastleK == true) && (key == "g1")) //if player can castle king side and chooses to
-                                {
-                                    //move piece then deselect
-                                    whitePieces.at(selectedSquare).movePiece(key);
-                                    whitePieces.at("h1").movePiece("f1");
-                                    whitePieces.at(selectedSquare).deselectPiece();
-                                    whiteKingLocation = key;
-                                    //update key of piece moved
-                                    auto nh1 = whitePieces.extract(selectedSquare);
-                                    nh1.key() = key;
-                                    whitePieces.insert(std::move(nh1));
-                                    auto nh2 = whitePieces.extract("h1");
-                                    nh2.key() = "f1";
-                                    whitePieces.insert(std::move(nh2));
-                                    changeTurn(selectedSquare, whiteTurn);
-                                }
-                                else if((canCastleQ == true) && (key == "c1")) //if player can castle queen side and chooses to
-                                {
-                                    //move piece then deselect
-                                    whitePieces.at(selectedSquare).movePiece(key);
-                                    whitePieces.at("a1").movePiece("d1");
-                                    whitePieces.at(selectedSquare).deselectPiece();
-                                    whiteKingLocation = key;
-                                    //update key of piece moved
-                                    auto nh1 = whitePieces.extract(selectedSquare);
-                                    nh1.key() = key;
-                                    whitePieces.insert(std::move(nh1));
-                                    auto nh2 = whitePieces.extract("a1");
-                                    nh2.key() = "d1";
-                                    whitePieces.insert(std::move(nh2));
-                                    changeTurn(selectedSquare, whiteTurn);
-                                }
-                                // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                                // selectedSquare = "";
-                                // whiteTurn = !whiteTurn;
-                                blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
-                            }                            
+                            }                           
                         }
                         else {
-                            if (selectedSquare != "")
+                            if(promoting != "" && promotionType != "")
                             {
-                                if(pawnDouble != ' ')
+                                blackPieces.erase(promoting);
+                                if (promotionType == "queen")
                                 {
-                                    std::string doublP = std::string() + pawnDouble + '2' + '4';
-                                    whitePieceLocations.insert(doublP);
+                                    blackPieces.insert({promoting, newQueenB});
                                 }
-                                validMovesP = blackPieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
-                                //logic to check if castling posible
-                                blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
-                                if(blackPieces.at(selectedSquare).getType() == "kingB" && blackPieces.at(selectedSquare).hasMoved() == false && blackKingInCheck == false)
+                                else if (promotionType == "rook")
                                 {
-                                    if((blackPieces.find("h8") != blackPieces.end()) && (blackPieces.at("h8").hasMoved() == false) && (whitePieces.find("f8") == whitePieces.end()) && (whitePieces.find("g8") == whitePieces.end()) && (blackPieces.find("f8") == blackPieces.end()) && (blackPieces.find("g8") == blackPieces.end()) && (squaresAttackedByWhite.find("f8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("g8") == squaresAttackedByWhite.end()))//king side castle
-                                    {
-                                        canCastleK = true;
-                                    }
-                                    else
-                                    {
-                                        canCastleK = false;
-                                    }
-                                    if((blackPieces.find("a8") != blackPieces.end()) && (blackPieces.at("a8").hasMoved() == false) && (whitePieces.find("b8") == whitePieces.end()) && (whitePieces.find("c8") == whitePieces.end()) && (whitePieces.find("d8") == whitePieces.end()) && (blackPieces.find("b8") == blackPieces.end()) && (blackPieces.find("c8") == blackPieces.end()) && (blackPieces.find("d8") == blackPieces.end()) && (squaresAttackedByWhite.find("b8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("c8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("d8") == squaresAttackedByWhite.end())) //queen side castle
-                                    {
-                                        canCastleQ = true;
-                                    }
-                                    else
-                                    {
-                                        canCastleQ = false;
-                                    }
+                                    blackPieces.insert({promoting, newRookB});
                                 }
-
-                                if(blackPieces.at(selectedSquare).getType() == "kingB" && (squaresAttackedByWhite.find(key) != squaresAttackedByWhite.end()))
+                                else if (promotionType == "knight")
                                 {
-                                    std::cout << "Black king cannot move into check!" << std::endl;
-                                    blackPieces.at(selectedSquare).deselectPiece();
-                                    selectedSquare = "";
-                                    break;
+                                    blackPieces.insert({promoting, newKnightB});
                                 }
-                                //if moving the selected piece to the new square (key) is valid
-                                if (validMovesP.count(key))
+                                else if (promotionType == "bishop")
                                 {
-
-                                    bool captureEnemy = false; //is the move a capture move?
-                                    if (whitePieces.find(key) != whitePieces.end()) 
+                                    blackPieces.insert({promoting, newBishopB});
+                                }
+                                blackPieces.at(promoting).movePiece(promoting);
+                                promoting = "";
+                                promotionType = "";
+                                changeTurn(selectedSquare, whiteTurn);
+                            }
+                            else {
+                                if (selectedSquare != "")
+                                {
+                                    if(pawnDouble != ' ')
                                     {
-                                        //capture white piece
-                                        captureEnemy = true;
-                                        whitePieces.at(key).movePiece("zz");
-                                        auto wh = whitePieces.extract(key);
-                                        wh.key() = "zz";
-                                        whitePieces.insert(std::move(wh));
+                                        std::string doublP = std::string() + pawnDouble + '2' + '4';
+                                        whitePieceLocations.insert(doublP);
                                     }
-                                    //move piece then deselect
-                                    blackPieces.at(selectedSquare).movePiece(key);
-                                    blackPieces.at(selectedSquare).deselectPiece();
-                                    //update key of piece moved
-                                    auto nh = blackPieces.extract(selectedSquare);
-                                    nh.key() = key;
-                                    blackPieces.insert(std::move(nh));
-                                    if(blackPieces.at(key).getType() == "kingB")
+                                    validMovesP = blackPieces.at(selectedSquare).getValidMoves(whitePieceLocations, blackPieceLocations, false);
+                                    //logic to check if castling posible
+                                    blackKingInCheck = isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite);
+                                    if(blackPieces.at(selectedSquare).getType() == "kingB" && blackPieces.at(selectedSquare).hasMoved() == false && blackKingInCheck == false)
                                     {
-                                        blackKingLocation = key;
-                                    }
-                                    updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                                    if(isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite))
-                                    {
-                                        //move pieces back
-                                        std::cout << "Your king can not be in check!" << std::endl;
-                                        if(captureEnemy)
+                                        if((blackPieces.find("h8") != blackPieces.end()) && (blackPieces.at("h8").hasMoved() == false) && (whitePieces.find("f8") == whitePieces.end()) && (whitePieces.find("g8") == whitePieces.end()) && (blackPieces.find("f8") == blackPieces.end()) && (blackPieces.find("g8") == blackPieces.end()) && (squaresAttackedByWhite.find("f8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("g8") == squaresAttackedByWhite.end()))//king side castle
                                         {
-                                            whitePieces.at("zz").movePiece(key);
-                                            auto wh = whitePieces.extract("zz");
-                                            wh.key() = key;
-                                            whitePieces.insert(std::move(wh));
+                                            canCastleK = true;
                                         }
-                                        blackPieces.at(key).movePiece(selectedSquare);
-                                        auto bh = blackPieces.extract(key);
-                                        bh.key() = selectedSquare;
-                                        blackPieces.insert(std::move(bh));
+                                        else
+                                        {
+                                            canCastleK = false;
+                                        }
+                                        if((blackPieces.find("a8") != blackPieces.end()) && (blackPieces.at("a8").hasMoved() == false) && (whitePieces.find("b8") == whitePieces.end()) && (whitePieces.find("c8") == whitePieces.end()) && (whitePieces.find("d8") == whitePieces.end()) && (blackPieces.find("b8") == blackPieces.end()) && (blackPieces.find("c8") == blackPieces.end()) && (blackPieces.find("d8") == blackPieces.end()) && (squaresAttackedByWhite.find("b8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("c8") == squaresAttackedByWhite.end()) && (squaresAttackedByWhite.find("d8") == squaresAttackedByWhite.end())) //queen side castle
+                                        {
+                                            canCastleQ = true;
+                                        }
+                                        else
+                                        {
+                                            canCastleQ = false;
+                                        }
+                                    }
+
+                                    if(blackPieces.at(selectedSquare).getType() == "kingB" && (squaresAttackedByWhite.find(key) != squaresAttackedByWhite.end()))
+                                    {
+                                        std::cout << "Black king cannot move into check!" << std::endl;
+                                        blackPieces.at(selectedSquare).deselectPiece();
                                         selectedSquare = "";
-                                        // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
                                         break;
                                     }
-                                    else
+                                    //if moving the selected piece to the new square (key) is valid
+                                    if (validMovesP.count(key))
                                     {
-                                        if(captureEnemy)
+
+                                        bool captureEnemy = false; //is the move a capture move?
+                                        if (whitePieces.find(key) != whitePieces.end()) 
                                         {
-                                            whitePieces.erase("zz");
+                                            //capture white piece
+                                            captureEnemy = true;
+                                            whitePieces.at(key).movePiece("zz");
+                                            auto wh = whitePieces.extract(key);
+                                            wh.key() = "zz";
+                                            whitePieces.insert(std::move(wh));
                                         }
-                                        //logic for promotion of pawn, just make a queen for now
-                                        if(blackPieces.at(key).getType() == "pawnB")
+                                        //move piece then deselect
+                                        blackPieces.at(selectedSquare).movePiece(key);
+                                        blackPieces.at(selectedSquare).deselectPiece();
+                                        //update key of piece moved
+                                        auto nh = blackPieces.extract(selectedSquare);
+                                        nh.key() = key;
+                                        blackPieces.insert(std::move(nh));
+                                        if(blackPieces.at(key).getType() == "kingB")
                                         {
-                                            char file = key.at(0);
-                                            char rank = key.at(1);
-                                            char startFile = selectedSquare.at(0);
-                                            char startRank = selectedSquare.at(1);
-                                            if (rank == '1')
+                                            blackKingLocation = key;
+                                        }
+                                        updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+                                        if(isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite))
+                                        {
+                                            //move pieces back
+                                            std::cout << "Your king can not be in check!" << std::endl;
+                                            if(captureEnemy)
                                             {
-                                                blackPieces.erase(key);
-                                                blackPieces.insert({key, newQueenB});
-                                                blackPieces.at(key).movePiece(key);
+                                                whitePieces.at("zz").movePiece(key);
+                                                auto wh = whitePieces.extract("zz");
+                                                wh.key() = key;
+                                                whitePieces.insert(std::move(wh));
                                             }
-                                            if(startRank == '7' && rank == '5')
+                                            blackPieces.at(key).movePiece(selectedSquare);
+                                            auto bh = blackPieces.extract(key);
+                                            bh.key() = selectedSquare;
+                                            blackPieces.insert(std::move(bh));
+                                            selectedSquare = "";
+                                            // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if(captureEnemy)
                                             {
-                                                pawnDouble = file;
+                                                whitePieces.erase("zz");
+                                            }
+                                            //logic for promotion of pawn
+                                            if(blackPieces.at(key).getType() == "pawnB")
+                                            {
+                                                char file = key.at(0);
+                                                char rank = key.at(1);
+                                                char startFile = selectedSquare.at(0);
+                                                char startRank = selectedSquare.at(1);
+                                                if (rank == '1')
+                                                {
+                                                    promoting = key;
+                                                }
+                                                if(startRank == '7' && rank == '5')
+                                                {
+                                                    pawnDouble = file;
+                                                }
+                                                else
+                                                {
+                                                    pawnDouble = ' ';
+                                                }
+                                                //if en pacant capture erase white piece
+                                                if(rank == '3' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
+                                                {
+                                                    std::string wp = std::string() + file + (char)(rank + 1);
+                                                    whitePieces.erase(wp);
+                                                }
                                             }
                                             else
                                             {
                                                 pawnDouble = ' ';
                                             }
-                                            //if en pacant capture erase white piece
-                                            if(rank == '3' && (((char)(startFile - 1) == file) || ((char)(startFile + 1) == file)) && captureEnemy == false)
-                                            {
-                                                std::string wp = std::string() + file + (char)(rank + 1);
-                                                whitePieces.erase(wp);
-                                            }
                                         }
-                                        else
-                                        {
-                                            pawnDouble = ' ';
-                                        }
+                                        if(promoting == "")
+                                        {changeTurn(selectedSquare, whiteTurn);}
                                     }
-
-                                }
-                                else if((canCastleK == true) && (key == "g8")) //if player can castle king side and chooses to
-                                {
-                                    //move piece then deselect
-                                    blackPieces.at(selectedSquare).movePiece(key);
-                                    blackPieces.at("h8").movePiece("f8");
-                                    blackPieces.at(selectedSquare).deselectPiece();
-                                    blackKingLocation = key;
-                                    //update key of piece moved
-                                    auto nh1 = blackPieces.extract(selectedSquare);
-                                    nh1.key() = key;
-                                    blackPieces.insert(std::move(nh1));
-                                    auto nh2 = blackPieces.extract("h8");
-                                    nh2.key() = "f8";
-                                    blackPieces.insert(std::move(nh2));
-                                }
-                                else if((canCastleQ == true) && (key == "c8")) //if player can castle queen side and chooses to
-                                {
-                                    //move piece then deselect
-                                    blackPieces.at(selectedSquare).movePiece(key);
-                                    blackPieces.at("a8").movePiece("d8");
-                                    blackPieces.at(selectedSquare).deselectPiece();
-                                    blackKingLocation = key;
-                                    //update key of piece moved
-                                    auto nh1 = blackPieces.extract(selectedSquare);
-                                    nh1.key() = key;
-                                    blackPieces.insert(std::move(nh1));
-                                    auto nh2 = blackPieces.extract("a8");
-                                    nh2.key() = "d8";
-                                    blackPieces.insert(std::move(nh2));
-                                }
-                                // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
-                                selectedSquare = "";
-                                whiteTurn = !whiteTurn;
-                                whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
-                            }                            
+                                    else if((canCastleK == true) && (key == "g8")) //if player can castle king side and chooses to
+                                    {
+                                        //move piece then deselect
+                                        blackPieces.at(selectedSquare).movePiece(key);
+                                        blackPieces.at("h8").movePiece("f8");
+                                        blackPieces.at(selectedSquare).deselectPiece();
+                                        blackKingLocation = key;
+                                        //update key of piece moved
+                                        auto nh1 = blackPieces.extract(selectedSquare);
+                                        nh1.key() = key;
+                                        blackPieces.insert(std::move(nh1));
+                                        auto nh2 = blackPieces.extract("h8");
+                                        nh2.key() = "f8";
+                                        blackPieces.insert(std::move(nh2));
+                                        if(promoting == "")
+                                        {changeTurn(selectedSquare, whiteTurn);}
+                                    }
+                                    else if((canCastleQ == true) && (key == "c8")) //if player can castle queen side and chooses to
+                                    {
+                                        //move piece then deselect
+                                        blackPieces.at(selectedSquare).movePiece(key);
+                                        blackPieces.at("a8").movePiece("d8");
+                                        blackPieces.at(selectedSquare).deselectPiece();
+                                        blackKingLocation = key;
+                                        //update key of piece moved
+                                        auto nh1 = blackPieces.extract(selectedSquare);
+                                        nh1.key() = key;
+                                        blackPieces.insert(std::move(nh1));
+                                        auto nh2 = blackPieces.extract("a8");
+                                        nh2.key() = "d8";
+                                        blackPieces.insert(std::move(nh2));
+                                        if(promoting == "")
+                                        {changeTurn(selectedSquare, whiteTurn);}
+                                    }
+                                    // updateLocations(whitePieces, blackPieces, whitePieceLocations, blackPieceLocations);
+                                    whiteKingInCheck = isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack);
+                                }   
+                            }                         
                         }
                     }
             }
@@ -722,6 +805,24 @@ int main()
         for (auto itr = blackPieces.begin(); itr != blackPieces.end(); itr++) { 
             itr->second.draw(window);
         }
+
+        if (promoting != "")
+        {
+            if(whiteTurn){
+                newQueenW.draw(window);
+                newRookW.draw(window);
+                newKnightW.draw(window);
+                newBishopW.draw(window);
+            }
+            else {
+                newQueenB.draw(window);
+                newRookB.draw(window);
+                newKnightB.draw(window);
+                newBishopB.draw(window);
+            }
+            
+        }
+        
 
         if(winningPlayer != "")
         {

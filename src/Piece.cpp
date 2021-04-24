@@ -46,6 +46,12 @@ void Piece::squareLocation(char file, char rank, int &xLocation, int &yLocation)
     else if (rank == '1') {
         yLocation = 406;
     }
+    else if (rank == '0') {
+        yLocation = 458;
+    }
+    else if (rank == '9') {
+        yLocation = 0;
+    }
     else {
         yLocation = 0;;
     }
