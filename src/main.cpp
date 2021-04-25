@@ -68,7 +68,7 @@ void testPosition(int x, int y, char &file, char &rank)
 }
 
 //updates the piece location sets
-void updateLocations(std::unordered_map<std::string, Piece> &whitePieces, std::unordered_map<std::string, Piece> &blackPieces, std::set<std::string> &whitePieceLocations, std::set<std::string> &blackPieceLocations)
+void updateLocations(std::unordered_map<std::string, Piece> whitePieces, std::unordered_map<std::string, Piece> blackPieces, std::set<std::string> &whitePieceLocations, std::set<std::string> &blackPieceLocations)
 {
     whitePieceLocations.clear();
     blackPieceLocations.clear();
@@ -86,6 +86,7 @@ bool isKingInCheck(std::unordered_map<std::string, Piece> enemyPieces, std::set<
 {
     squaresAttackedByEnemy.clear();
     //find what squares are being attacked
+    //iterate over enemy pieces, find out what squares they are attacking
     for (auto itr = enemyPieces.begin(); itr != enemyPieces.end(); itr++) 
     {
         std::set<std::string> s = itr->second.getValidMoves(whitePieceLocations, blackPieceLocations, true);
@@ -140,7 +141,7 @@ bool isGameOver(std::unordered_map<std::string, Piece> &whitePieces, std::unorde
                 std::set<std::string> squaresAttackedByBlackTemp;   
                 if(!isKingInCheck(blackPiecesTemp, whitePieceLocationsTemp, blackPieceLocationsTemp, whiteKingLocationTemp, squaresAttackedByBlackTemp))
                 {
-                    // std::cout << currentSquare << moveN << std::endl;
+                    std::cout << currentSquare << moveN << std::endl;
                     return false;
                 }
             }
@@ -337,11 +338,25 @@ int main()
                         std::cout << "Game over!" << std::endl;
                         if(whiteTurn)
                         {
-                            winningPlayer = "Black";
+                            if(isKingInCheck(blackPieces,whitePieceLocations,blackPieceLocations,whiteKingLocation,squaresAttackedByBlack))
+                            {
+                                winningPlayer = "Black";
+                            }
+                            else
+                            {
+                                winningPlayer = "Stalemate";
+                            }
                         }
                         else
                         {
-                            winningPlayer = "White";
+                            if(isKingInCheck(whitePieces,whitePieceLocations,blackPieceLocations,blackKingLocation,squaresAttackedByWhite))
+                            {
+                                winningPlayer = "White";
+                            }
+                            else
+                            {
+                                winningPlayer = "Stalemate";
+                            }
                         }
                     }          
 
@@ -826,7 +841,14 @@ int main()
 
         if(winningPlayer != "")
         {
-            window.setTitle(winningPlayer + " Wins!");
+            if (winningPlayer == "Stalemate")
+            {
+                window.setTitle("Stalemate!");
+            }
+            else
+            {
+                window.setTitle(winningPlayer + " Wins!");
+            }
         }
         else
         {

@@ -139,6 +139,17 @@ void Piece::draw(sf::RenderWindow &window)
     // window.draw(highlightR);
 }
 
+bool offBoard(std::string move)
+{
+    char rank = move.at(1);
+    char file = move.at(0);
+    if ((rank - '0' < 1) || (rank - '0' > 8) || ((char)(file - 0) < 'a') || ((char)(file - 0) > 'h'))
+    {
+        return true;
+    }
+    return false;
+}
+
 std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocations, std::set<std::string> blackPieceLocations, bool attackMovesOnly){
     std::set<std::string> moves;
     if(type == "pawnW") //add en passant and promotion in later
@@ -494,37 +505,46 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         std::string downdownRight = std::string() + (char)(file + 1) + (char)(rank - 2);
         std::string downLeftLeft = std::string() + (char)(file - 2) + (char)(rank - 1);
         std::string downRightRight = std::string() + (char)(file + 2) + (char)(rank - 1);
+        
         if(blackPieceLocations.count(upupLeft) || !whitePieceLocations.count(upupLeft))
         {
-            moves.insert(upupLeft);
+            if(!offBoard(upupLeft))
+            {moves.insert(upupLeft);}
         }
         if(blackPieceLocations.count(upupRight) || !whitePieceLocations.count(upupRight))
         {
-            moves.insert(upupRight);
+            if(!offBoard(upupRight))
+            {moves.insert(upupRight);}
         }
         if(blackPieceLocations.count(upLeftLeft) || !whitePieceLocations.count(upLeftLeft))
         {
-            moves.insert(upLeftLeft);
+            if(!offBoard(upLeftLeft))
+            {moves.insert(upLeftLeft);}
         }
         if(blackPieceLocations.count(upRightRight) || !whitePieceLocations.count(upRightRight))
         {
-            moves.insert(upRightRight);
+            if(!offBoard(upRightRight))
+            {moves.insert(upRightRight);}
         }
         if(blackPieceLocations.count(downdownLeft) || !whitePieceLocations.count(downdownLeft))
         {
-            moves.insert(downdownLeft);
+            if(!offBoard(downdownLeft))
+            {moves.insert(downdownLeft);}
         }
         if(blackPieceLocations.count(downdownRight) || !whitePieceLocations.count(downdownRight))
         {
-            moves.insert(downdownRight);
+            if(!offBoard(downdownRight))
+            {moves.insert(downdownRight);}
         }
         if(blackPieceLocations.count(downLeftLeft) || !whitePieceLocations.count(downLeftLeft))
         {
-            moves.insert(downLeftLeft);
+            if(!offBoard(downLeftLeft))
+            {moves.insert(downLeftLeft);}
         }
         if(blackPieceLocations.count(downRightRight) || !whitePieceLocations.count(downRightRight))
         {
-            moves.insert(downRightRight);
+            if(!offBoard(downRightRight))
+            {moves.insert(downRightRight);}
         }
     }
 
@@ -877,35 +897,43 @@ std::set<std::string> Piece::getValidMoves(std::set<std::string> whitePieceLocat
         std::string downRightRight = std::string() + (char)(file + 2) + (char)(rank - 1);
         if(whitePieceLocations.count(upupLeft) || !blackPieceLocations.count(upupLeft))
         {
-            moves.insert(upupLeft);
+            if(!offBoard(upupLeft))
+            {moves.insert(upupLeft);}
         }
         if(whitePieceLocations.count(upupRight) || !blackPieceLocations.count(upupRight))
         {
-            moves.insert(upupRight);
+            if(!offBoard(upupRight))
+            {moves.insert(upupRight);}
         }
         if(whitePieceLocations.count(upLeftLeft) || !blackPieceLocations.count(upLeftLeft))
         {
-            moves.insert(upLeftLeft);
+            if(!offBoard(upLeftLeft))
+            {moves.insert(upLeftLeft);}
         }
         if(whitePieceLocations.count(upRightRight) || !blackPieceLocations.count(upRightRight))
         {
-            moves.insert(upRightRight);
+            if(!offBoard(upRightRight))
+            {moves.insert(upRightRight);}
         }
         if(whitePieceLocations.count(downdownLeft) || !blackPieceLocations.count(downdownLeft))
         {
-            moves.insert(downdownLeft);
+            if(!offBoard(downdownLeft))
+            {moves.insert(downdownLeft);}
         }
         if(whitePieceLocations.count(downdownRight) || !blackPieceLocations.count(downdownRight))
         {
-            moves.insert(downdownRight);
+            if(!offBoard(downdownRight))
+            {moves.insert(downdownRight);}
         }
         if(whitePieceLocations.count(downLeftLeft) || !blackPieceLocations.count(downLeftLeft))
         {
-            moves.insert(downLeftLeft);
+            if(!offBoard(downLeftLeft))
+            {moves.insert(downLeftLeft);}
         }
         if(whitePieceLocations.count(downRightRight) || !blackPieceLocations.count(downRightRight))
         {
-            moves.insert(downRightRight);
+            if(!offBoard(downRightRight))
+            {moves.insert(downRightRight);}
         }
     }
 
