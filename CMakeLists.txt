@@ -37,7 +37,7 @@ configure_file(include/config.h.in config.h)
 find_package(SFML 2.5 COMPONENTS system window graphics audio REQUIRED)
 
 # Compile executable
-add_executable(chess src/main.cpp src/Moves.cpp src/Piece.cpp)
+add_executable(${PROJECT_NAME} src/main.cpp src/Moves.cpp src/Piece.cpp)
 
 # Set include directory search paths
 target_include_directories(chess 
