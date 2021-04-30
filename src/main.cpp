@@ -141,7 +141,7 @@ bool isGameOver(std::unordered_map<std::string, Piece> &whitePieces, std::unorde
                 std::set<std::string> squaresAttackedByBlackTemp;   
                 if(!isKingInCheck(blackPiecesTemp, whitePieceLocationsTemp, blackPieceLocationsTemp, whiteKingLocationTemp, squaresAttackedByBlackTemp))
                 {
-                    std::cout << currentSquare << moveN << std::endl;
+                    // std::cout << currentSquare << moveN << std::endl;
                     return false;
                 }
             }

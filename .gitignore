@@ -1,3 +1,7 @@
 .git_old
 .vscode
 build
+configure.sh
+build.sh
+install.sh
+run.sh
