@@ -13,4 +13,4 @@ Install SFML and its dependencies
 # Usage
 In the build directory run
 
-`$./chess`
+`$ ./chess`
